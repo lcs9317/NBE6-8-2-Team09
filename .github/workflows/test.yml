@@ -115,6 +115,9 @@ jobs:
           ls -R .next
           echo "=== public top-level ==="
           ls -R public
+          echo "GLOB1:" frontend/.next/**
+          echo "GLOB2:" frontend/.next/**/*
+          echo "GLOB3:" frontend/.next/*
 
       # 산출물 업로드: standalone + static + public
       - name: Upload frontend dist
@@ -122,7 +125,7 @@ jobs:
         with:
           name: frontend-dist
           path: |
-            frontend/.next
+            frontend/.next/**/*
             frontend/public
 
       # Backend build (Gradle bootJar)
