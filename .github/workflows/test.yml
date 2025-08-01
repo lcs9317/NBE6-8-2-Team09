@@ -157,7 +157,10 @@ jobs:
         with:
           name: frontend-dist
           path: frontend
-
+          
+      - name: Debug frontend folder
+        run: ls -R frontend
+        
       - name: Download backend jar
         uses: actions/download-artifact@v4
         with:
