@@ -14,7 +14,8 @@ COPY public ./public
 COPY .next/static ./public/_next/static
 
 # Nginx 설정 복사
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
+
 
 ENV NODE_ENV=production \
     LISTEN_PORT=80 \
