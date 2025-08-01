@@ -14,9 +14,13 @@ COPY public .
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 ENV NODE_ENV=production
+ENV LISTEN_PORT=80
+ENV APP_PORT=3001
 
 EXPOSE 3000
 EXPOSE 80
 
 ENTRYPOINT ["/usr/bin/dumb-init","--"]
-CMD ["bash","-lc","envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && PORT=3001 node server.js & nginx -g 'daemon off;'"]
+CMD ["bash","-lc","envsubst '$LISTEN_PORT $APP_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && PORT=$APP_PORT node server.js & nginx -g 'daemon off;' "]
+
+
