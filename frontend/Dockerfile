@@ -8,8 +8,8 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY .next/standalone ./
-COPY .next ./.next
-COPY public ./public
+COPY .next .
+COPY public .
 
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
