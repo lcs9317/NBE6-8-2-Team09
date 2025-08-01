@@ -1,4 +1,7 @@
 spring:
+  config:
+    activate:
+      on-profile: render
   datasource:
     # Render 'External URL'을 분해해서 넣거나, 직접 JDBC URL로 지정
     # host, port, db, user, password는 Render 대시보드에서 확인
