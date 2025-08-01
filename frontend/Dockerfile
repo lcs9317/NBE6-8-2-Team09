@@ -19,4 +19,4 @@ EXPOSE 3000
 EXPOSE 80
 
 ENTRYPOINT ["/usr/bin/dumb-init","--"]
-CMD ["bash","-lc","envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && PORT=3000 node server.js & nginx -g 'daemon off;'"]
+CMD ["bash","-lc","envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && PORT=3001 node server.js & nginx -g 'daemon off;'"]
