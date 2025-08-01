@@ -4,7 +4,7 @@ spring:
   application:
     name: back
   profiles:
-    active: dev
+    active: render
   output:
     ansi:
       enabled: always
@@ -20,7 +20,9 @@ spring:
   data:
     redis:
       host: ${REDIS_HOST}
+      username: default
       port: ${REDIS_PORT}
+      password : ${REDIS_PASSWORD}
 
   thymeleaf:
     cache: false
