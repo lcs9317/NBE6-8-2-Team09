@@ -108,10 +108,6 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-      - name: Pack frontend dist
-        working-directory: frontend
-        run: |
-          tar --exclude='.next/cache' -czf ../frontend-dist.tar.gz .next public
 
       # 산출물 업로드: standalone + static + public
       - name: Upload frontend dist
@@ -119,7 +115,10 @@ jobs:
         with:
           name: frontend-dist
           path: |
-            frontend-dist.tar.gz
+            frontend/.next
+            frontend/public
+          include-hidden-files: true
+          if-no-files-found: error
 
       # Backend build (Gradle bootJar)
       - uses: actions/setup-java@v4
@@ -159,12 +158,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
-          path: .
-      - name: Extract frontend dist
-        run: |
-          mkdir -p frontend
-          tar -xzf frontend-dist.tar.gz -C frontend
-          ls -Ra frontend
+          path: frontend
+      
           
       - name: Debug frontend folder
         run: ls -Ra frontend
