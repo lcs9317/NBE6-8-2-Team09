@@ -3,8 +3,7 @@ spring:
     import: optional:file:.env[.properties]
   application:
     name: back
-  profiles:
-    active: render
+
   output:
     ansi:
       enabled: always
