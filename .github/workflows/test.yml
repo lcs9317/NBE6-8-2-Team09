@@ -114,8 +114,7 @@ jobs:
         with:
           name: frontend-dist
           path: |
-            frontend/.next/standalone/**
-            frontend/.next/static/**
+            frontend/.next/**
             frontend/public/**
 
       # Backend build (Gradle bootJar)
