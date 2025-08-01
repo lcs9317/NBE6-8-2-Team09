@@ -1,21 +1,19 @@
 FROM node:20-bullseye-slim
 
-# Nginx + dumb-init 설치
+# Nginx + dumb-init + envsubst 설치
 RUN apt-get update \
- && apt-get install -y nginx dumb-init \
+ && apt-get install -y nginx dumb-init gettext-base \
  && rm -rf /var/lib/apt/lists/* \
  && mkdir -p /run/nginx
 
 WORKDIR /app
 
-# CI에서 빌드된 .next/standalone과 public을 복사
 COPY .next/standalone ./
 COPY public ./public
 COPY .next/static ./public/_next/static
 
-# Nginx 설정 복사
+# 템플릿 복사
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
-
 
 ENV NODE_ENV=production
 
@@ -23,8 +21,4 @@ EXPOSE 3000  # Next.js 내부
 EXPOSE 80    # Nginx 외부(선택)
 
 ENTRYPOINT ["/usr/bin/dumb-init","--"]
-CMD bash -lc "\
-  envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
-  node server.js & \
-  nginx -g 'daemon off;'\ 
-"
+CMD ["bash","-lc","envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && node server.js & nginx -g 'daemon off;'"]
