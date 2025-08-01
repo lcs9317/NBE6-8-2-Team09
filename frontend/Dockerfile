@@ -17,8 +17,8 @@ COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 ENV NODE_ENV=production
 
-EXPOSE 3000  # Next.js 내부
-EXPOSE 80    # Nginx 외부(선택)
+EXPOSE 3000  
+EXPOSE 80    
 
 ENTRYPOINT ["/usr/bin/dumb-init","--"]
 CMD ["bash","-lc","envsubst '$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && node server.js & nginx -g 'daemon off;'"]
