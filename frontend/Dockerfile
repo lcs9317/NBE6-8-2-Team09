@@ -17,11 +17,14 @@ COPY .next/static ./public/_next/static
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 
-ENV NODE_ENV=production \
-    LISTEN_PORT=80 \
-    PORT=3000
+ENV NODE_ENV=production
 
-EXPOSE 80
+EXPOSE 3000  # Next.js 내부
+EXPOSE 80    # Nginx 외부(선택)
 
 ENTRYPOINT ["/usr/bin/dumb-init","--"]
-CMD ["bash","-lc","node server.js & nginx -g 'daemon off;'"]
+CMD bash -lc "\
+  envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && \
+  node server.js & \
+  nginx -g 'daemon off;'\ 
+"
