@@ -28,7 +28,7 @@ RUN printf '%s\n' \
 'echo "→ .next structure:"' \
 'ls -la .next || true; ls -la .next/standalone || true; ls -la .next/static || true' \
 'echo "→ write nginx conf from template"' \
-'envsubst "$PORT $APP_PORT" < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf' \
+'envsubst '$PORT $APP_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf' \
 'echo "----- /etc/nginx/conf.d/default.conf -----"' \
 'sed -n "1,160p" /etc/nginx/conf.d/default.conf' \
 'echo "→ nginx -t"' \
