@@ -36,8 +36,11 @@ if ! nginx -t; then
 fi
 
 # 3) Next(standalone) 먼저 백그라운드로 시작
-echo "→ start Next on APP_PORT=$APP_PORT"
-HOST=0.0.0.0 PORT=${APP_PORT:-3001} node server.js &
+echo "→ start Next on APP_PORT=$APP_PORT (HOSTNAME = 127.0.0.1)"
+HOSTNAME=127.0.0.1 PORT=${APP_PORT:-3001} node server.js &
+
+sleep 0.5
+ss -ltnp | grep ":${APP_PORT:-3001}" || true
 
 # 4) Next 준비 대기 (최대 20초). 실패해도 종료하지 않음
 echo "→ waiting Next readiness on 127.0.0.1:${APP_PORT:-3001} ..."
