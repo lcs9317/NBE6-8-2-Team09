@@ -11,6 +11,8 @@ COPY .next/standalone ./
 COPY .next .
 COPY public .
 
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
+
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 ENV NODE_ENV=production
