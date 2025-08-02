@@ -11,7 +11,13 @@ COPY .next/standalone ./
 COPY .next .
 COPY public .
 
-RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/conf.d/default.conf
+RUN apt-get update \
+ && apt-get install -y nginx dumb-init gettext-base \
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -f /etc/nginx/sites-enabled/default \
+ && rm -f /etc/nginx/conf.d/default.conf \
+ && rm -f /etc/nginx/nginx.conf \
+ && mkdir -p /run/nginx
 
 COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
