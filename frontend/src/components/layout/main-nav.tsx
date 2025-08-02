@@ -34,7 +34,7 @@ export function MainNav({
         const checkLoginStatus = async () => {
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/users/me`,
+                    `/api/v1/users/me`,
                     {
                         method: "GET",
                         credentials: "include", // HttpOnly 쿠키 전송
