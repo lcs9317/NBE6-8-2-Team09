@@ -5,7 +5,6 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/* \
  && rm -f /etc/nginx/sites-enabled/default \
  && rm -f /etc/nginx/conf.d/default.conf \
- && rm -f /etc/nginx/nginx.conf \
  && mkdir -p /run/nginx
 
 WORKDIR /app
