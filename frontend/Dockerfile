@@ -42,11 +42,11 @@ HOST=0.0.0.0 PORT=${APP_PORT:-3001} node server.js &
 # 4) Next 준비 대기 (최대 20초). 실패해도 종료하지 않음
 echo "→ waiting Next readiness on 127.0.0.1:${APP_PORT:-3001} ..."
 i=0
-until curl -sS -o /dev/null --max-time 1 "http://127.0.0.1:${APP_PORT:-3001}/"; do  # [CHANGED]
+until curl -sS -o /dev/null --max-time 1 "http://127.0.0.1:${APP_PORT:-3001}/"; do
   i=$((i+1))
   echo "  waiting... try ${i}/40"
   if [ "$i" -ge 40 ]; then
-    echo "WARN: Next not ready yet, proceeding to start nginx anyway"   # [ADDED]
+    echo "WARN: Next not ready yet, proceeding to start nginx anyway"
     break
   fi
   sleep 0.5
