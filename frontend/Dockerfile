@@ -43,6 +43,5 @@ done
 # Nginx 포그라운드 실행
 exec nginx -g 'daemon off;'
 SH
-COPY start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
