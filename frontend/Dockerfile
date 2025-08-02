@@ -44,4 +44,9 @@ curl -I --max-time 2 http://127.0.0.1:${APP_PORT:-3001}/ || true
 echo "→ start nginx (listen on PORT=$PORT)"
 exec nginx -g 'daemon off;'
 SH
- && chmod +x /usr/local/bin/start.sh
+
+# 실행권한 부여 (heredoc과 별도 RUN)
+RUN chmod +x /usr/local/bin/start.sh
+
+ENTRYPOINT ["/usr/bin/dumb-init","--"]
+CMD ["/usr/local/bin/start.sh"]
