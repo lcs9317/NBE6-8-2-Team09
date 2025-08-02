@@ -18,6 +18,7 @@ COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 ENV NODE_ENV=production
 ENV APP_PORT=3001
 
+# start.sh 재작성 (heredoc)
 RUN cat > /usr/local/bin/start.sh <<'SH'
 #!/usr/bin/env bash
 set -euo pipefail
@@ -28,31 +29,32 @@ echo "ENV: PORT=${PORT:-unset} APP_PORT=${APP_PORT:-unset}"
 envsubst '$PORT $APP_PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 echo "----- /etc/nginx/conf.d/default.conf -----"
 sed -n '1,120p' /etc/nginx/conf.d/default.conf
-nginx -t
 
-# 2) Next(standalone) 먼저 백그라운드로 시작
+# 2) nginx 설정 테스트 (실패해도 종료하지 않음)
+if ! nginx -t; then 
+  echo "WARN: nginx -t failed, but continuing to start for diagnostics"
+fi
+
+# 3) Next(standalone) 먼저 백그라운드로 시작
 echo "→ start Next on APP_PORT=$APP_PORT"
 HOST=0.0.0.0 PORT=${APP_PORT:-3001} node server.js &
 
-# 3) Next가 리슨될 때까지 대기 (최대 20초, 0.5s 간격)
-for i in $(seq 1 40); do
-  if curl -sS -o /dev/null --max-time 1 http://127.0.0.1:${APP_PORT:-3001}/; then
-    echo "Next is up (checked at try ${i})"
+# 4) Next 준비 대기 (최대 20초). 실패해도 종료하지 않음
+echo "→ waiting Next readiness on 127.0.0.1:${APP_PORT:-3001} ..."
+i=0
+until curl -sS -o /dev/null --max-time 1 "http://127.0.0.1:${APP_PORT:-3001}/"; do  # [CHANGED]
+  i=$((i+1))
+  echo "  waiting... try ${i}/40"
+  if [ "$i" -ge 40 ]; then
+    echo "WARN: Next not ready yet, proceeding to start nginx anyway"   # [ADDED]
     break
   fi
-  echo "Waiting for Next... (${i}/40)"
   sleep 0.5
 done
 
-# 최종 확인 (여전히 실패면 종료)
-if ! curl -sS -o /dev/null --max-time 1 http://127.0.0.1:${APP_PORT:-3001}/; then
-  echo "ERROR: Next never became ready on 127.0.0.1:${APP_PORT:-3001}"
-  exit 1
-fi
-
-# 4) nginx 실행
+# 5) nginx 포그라운드 실행 (메인 프로세스)
 echo "→ start nginx (listen on PORT=$PORT)"
 exec nginx -g 'daemon off;'
 SH
-
 RUN chmod +x /usr/local/bin/start.sh
+
