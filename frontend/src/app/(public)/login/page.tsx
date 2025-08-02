@@ -28,7 +28,7 @@ export default function LoginPage() {
         const checkAlreadyLoggedIn = async () => {
             try {
                 const response = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/users/me`,
+                    `/api/v1/users/me`,
                     {
                         method: "GET",
                         credentials: "include",
@@ -90,7 +90,7 @@ export default function LoginPage() {
     });
 
     const onSubmit = async (values: any) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/login`, {
+        const res = await fetch(`/api/v1/users/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(values),
@@ -169,7 +169,7 @@ export default function LoginPage() {
                         className="w-full"
                         onClick={() => {
                             const redirectUri = encodeURIComponent("http://localhost:3000/api/auth/callback/google");
-                            const googleAuthUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080'}/oauth2/authorization/google?redirect_uri=${redirectUri}`;
+                            const googleAuthUrl = `/oauth2/authorization/google?redirect_uri=${redirectUri}`;
                             window.location.href = googleAuthUrl;
                         }}
                     >
