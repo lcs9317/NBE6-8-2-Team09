@@ -3,7 +3,7 @@ upstream app {
 }
 
 server {
-    listen        ${LISTEN_PORT};
+    listen        ${PORT};
     server_name  _;
 
     location /api/ {
