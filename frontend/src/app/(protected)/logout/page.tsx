@@ -11,7 +11,7 @@ export default function LogoutPage() {
             try {
                 // 백엔드 로그아웃 (accessToken, apiKey 삭제)
                 await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"}/api/v1/users/logout`,
+                    `/api/v1/users/logout`,
                     {
                         method: "DELETE",
                         credentials: "include",
