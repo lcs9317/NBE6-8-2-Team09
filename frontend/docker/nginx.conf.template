@@ -1,3 +1,4 @@
+
 map $http_origin $origin_allowed {
     default   0;
     "~^https://peuronteuendeu\.onrender\.com$" 1;
@@ -12,12 +13,43 @@ map $http_referer $referer_allowed {
     "~^http://127\.0\.0\.1(:\d+)?(/|$)"            1;
 }
 
+map $request_method $is_options {
+    default   0;
+    OPTIONS   1;
+}
+
+map "$request_method:$origin_allowed" $deny_preflight {
+    default     0;
+    "OPTIONS:0" 1;
+}
+
 map $request_method $is_state_changing {
     default 0;
     POST    1;
     PUT     1;
     PATCH   1;
     DELETE  1;
+}
+
+map $http_origin $has_origin {
+    ""      0;
+    default 1;
+}
+
+map $origin_allowed $bad_origin {
+    "0"     1;
+    default 0;
+}
+
+map $referer_allowed $bad_referer {
+    "0"     1;
+    default 0;
+}
+
+map "$is_state_changing:$has_origin:$bad_origin:$bad_referer" $deny_csrf {
+    default       0;
+    "1:1:1:0"     1;  # 상태 변경 요청, origin은 있지만 허용되지 않음
+    "1:0:0:1"     1;  # 상태 변경 요청, origin 없고 referer도 허용되지 않음
 }
 
 upstream app {
@@ -29,22 +61,15 @@ server {
     server_name   _;
 
     location = /api/auth/google/callback {
-        if ($request_method = OPTIONS) {
-            if ($origin_allowed = 0) { return 403; }
+        if ($deny_preflight) { return 403; }
+        if ($is_options) {
             add_header Access-Control-Allow-Origin   $http_origin always;
             add_header Access-Control-Allow-Credentials true       always;
             add_header Access-Control-Allow-Methods    "GET, POST, PUT, DELETE, OPTIONS" always;
             add_header Access-Control-Allow-Headers    "Authorization,Content-Type"    always;
             return 204;
         }
-        if ($is_state_changing = 1) {
-            if ($http_origin != "") {
-                if ($origin_allowed = 0) { return 403; }
-            }
-            if ($http_origin = "") {
-                if ($referer_allowed = 0) { return 403; }
-            }
-        }
+        if ($deny_csrf) { return 403; }
         proxy_pass         http://app;
         proxy_http_version 1.1;
         proxy_set_header   Host              $host;
@@ -54,22 +79,15 @@ server {
     }
 
     location /oauth2/ {
-        if ($request_method = OPTIONS) {
-            if ($origin_allowed = 0) { return 403; }
+        if ($deny_preflight) { return 403; }
+        if ($is_options) {
             add_header Access-Control-Allow-Origin   $http_origin always;
             add_header Access-Control-Allow-Credentials true       always;
             add_header Access-Control-Allow-Methods    "GET, POST, PUT, DELETE, OPTIONS" always;
             add_header Access-Control-Allow-Headers    "Authorization,Content-Type"    always;
             return 204;
         }
-        if ($is_state_changing = 1) {
-            if ($http_origin != "") {
-                if ($origin_allowed = 0) { return 403; }
-            }
-            if ($http_origin = "") {
-                if ($referer_allowed = 0) { return 403; }
-            }
-        }
+        if ($deny_csrf) { return 403; }
         proxy_pass             https://back9-backend-latest.onrender.com;
         proxy_http_version     1.1;
         proxy_set_header       Host                   back9-backend-latest.onrender.com;
@@ -93,23 +111,15 @@ server {
         proxy_cookie_flags   ~ Secure;
         proxy_cookie_flags   ~ samesite=None;
 
-        if ($request_method = OPTIONS) {
-            if ($origin_allowed = 0) { return 403; }
+        if ($deny_preflight) { return 403; }
+        if ($is_options) {
             add_header Access-Control-Allow-Origin   $http_origin always;
             add_header Access-Control-Allow-Credentials true       always;
             add_header Access-Control-Allow-Methods    "GET, POST, PUT, DELETE, OPTIONS" always;
             add_header Access-Control-Allow-Headers    "Authorization,Content-Type"    always;
             return 204;
         }
-
-        if ($is_state_changing = 1) {
-            if ($http_origin != "") {
-                if ($origin_allowed = 0) { return 403; }
-            }
-            if ($http_origin = "") {
-                if ($referer_allowed = 0) { return 403; }
-            }
-        }
+        if ($deny_csrf) { return 403; }
 
         add_header Access-Control-Allow-Origin   $http_origin always;
         add_header Access-Control-Allow-Credentials true       always;
