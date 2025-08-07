@@ -92,6 +92,7 @@ server {
         proxy_cookie_domain  .back9-backend-latest.onrender.com   .peuronteuendeu.onrender.com;
         proxy_cookie_flags   ~ Secure;
         proxy_cookie_flags   ~ samesite=None;
+
         if ($request_method = OPTIONS) {
             if ($origin_allowed = 0) { return 403; }
             add_header Access-Control-Allow-Origin   $http_origin always;
@@ -100,6 +101,7 @@ server {
             add_header Access-Control-Allow-Headers    "Authorization,Content-Type"    always;
             return 204;
         }
+
         if ($is_state_changing = 1) {
             if ($http_origin != "") {
                 if ($origin_allowed = 0) { return 403; }
@@ -108,10 +110,12 @@ server {
                 if ($referer_allowed = 0) { return 403; }
             }
         }
+
         add_header Access-Control-Allow-Origin   $http_origin always;
         add_header Access-Control-Allow-Credentials true       always;
         add_header Access-Control-Allow-Methods    "GET, POST, PUT, DELETE, OPTIONS" always;
         add_header Access-Control-Allow-Headers    "Authorization,Content-Type"    always;
+
         proxy_pass            https://back9-backend-latest.onrender.com;
         proxy_http_version    1.1;
         proxy_set_header      Host              back9-backend-latest.onrender.com;
